@@ -2,9 +2,10 @@ package com.sbertech.accounts.services;
 
 import com.sbertech.accounts.model.Account;
 import com.sbertech.accounts.model.AccountsStore;
+import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +25,16 @@ public class AccountsDatabaseStoreBean implements AccountsStore {
     private EntityManager dataStore;
 
     @Override
-    public void add(Account aAccount) {
-        dataStore.persist(aAccount);
+    public Account find(String aAccountNumber) {
+        TypedQuery<Account> fetcher = dataStore.createNamedQuery("account.by.number", Account.class);
+        fetcher.setParameter("accountNumber", aAccountNumber);
+        return fetcher.getSingleResult();
     }
 
     @Override
-    public Account find(String aAccountNumber) {
-        Query fetcher = dataStore.createNamedQuery("account.by.number");
-        fetcher.setParameter("accountNumber", aAccountNumber);
-        return (Account) fetcher.getSingleResult();
+    public Collection<Account> accounts() {
+        TypedQuery<Account> fetcher = dataStore.createNamedQuery("accounts.all", Account.class);
+        return fetcher.getResultList();
     }
 
 }

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AccountsController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stt-server</a> &gt; <a href="index.source.html" class="el_package">com.sbertech.accounts.web</a> &gt; <span class="el_source">AccountsController.java</span></div><h1>AccountsController.java</h1><pre class="source lang-java linenums">package com.sbertech.accounts.web;
+
+import java.text.MessageFormat;
+import java.util.Collection;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import com.sbertech.accounts.model.NotEnoughAmountException;
+import com.sbertech.accounts.model.Account;
+import com.sbertech.accounts.model.AccountsProcessor;
+import com.sbertech.accounts.model.AccountsStore;
+import com.sbertech.accounts.model.Transfer;
+import com.sbertech.accounts.model.OperationsStore;
+import java.io.IOException;
+
+/**
+ * JSON REST end point of accounts API.
+ *
+ * @author mg
+ */
+@RestController
+<span class="nc" id="L30">public class AccountsController {</span>
+
+    /**
+     * Accounts store.
+     */
+    @Autowired
+    private AccountsStore accountsStore;
+
+    /**
+     * Operations store.
+     */
+    @Autowired
+    private OperationsStore operationsStore;
+
+    /**
+     * Accounts processor.
+     */
+    @Autowired
+    private AccountsProcessor processor;
+
+    /**
+     * Retrieves a accounts list.
+     *
+     * @return JSON binded collection of accounts.
+     * @throws IOException if some error while communications occur.
+     */
+    @RequestMapping(path = &quot;accounts&quot;,
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public final Collection&lt;Account&gt; accounts() throws IOException {
+<span class="nc" id="L60">        return accountsStore.accounts();</span>
+    }
+
+    /**
+     * Looks up an account by its number.
+     *
+     * @param aAccountNumber Number of an account to lookup.
+     * @return An {@code Account} instance got from repository.
+     * @throws IOException if some error while communications occur.
+     */
+    @RequestMapping(path = &quot;accounts/{account-number}&quot;,
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public final Account accountByNumber(
+            @PathVariable(&quot;account-number&quot;) String aAccountNumber) throws IOException {
+<span class="nc" id="L75">        return accountsStore.find(aAccountNumber);</span>
+    }
+
+    /**
+     * Creates an operation of transfer between accounts.
+     *
+     * @param aTransfer A JSON binded operation body.
+     * @param aResponse Http servlet response. Used to send 'location' header.
+     * @throws NotEnoughAmountException
+     * @throws IOException if some error while communications occur.
+     */
+    @RequestMapping(path = &quot;operations&quot;,
+            method = RequestMethod.POST,
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    public final void createOperation(@RequestBody final Transfer aTransfer,
+            HttpServletResponse aResponse) throws NotEnoughAmountException,
+            IOException {
+<span class="nc" id="L93">        processor.transfer(aTransfer);</span>
+<span class="nc" id="L94">        aResponse.setHeader(HttpHeaders.LOCATION,</span>
+<span class="nc" id="L95">                MessageFormat.format(&quot;operations/{0}&quot;, aTransfer.getId()));</span>
+<span class="nc" id="L96">    }</span>
+
+    /**
+     * Fetches operations of adding to or withdraw from an account.
+     *
+     * @param aAccountNumber Number of an account, operations will be fetched
+     * for.
+     * @return Collection of {@code Transfer} instances.
+     * @throws IOException if some error while communications occur.
+     */
+    @RequestMapping(path = &quot;accounts/{account-number}/operations&quot;,
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public final Collection&lt;Transfer&gt; operationsOfAccount(
+            @PathVariable(&quot;account-number&quot;) String aAccountNumber) throws IOException {
+<span class="nc" id="L111">        return processor.transfersOnAccount(aAccountNumber);</span>
+    }
+
+    /**
+     * Looks up a transfer operation by its id.
+     *
+     * @param anOperationId An operation id.
+     * @return {@code Transfer} instance found.
+     */
+    @RequestMapping(value = &quot;operations/{operation-id}&quot;,
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public final Transfer operationById(
+            @PathVariable(&quot;operation-id&quot;) String anOperationId) {
+<span class="nc" id="L125">        return operationsStore.find(anOperationId);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

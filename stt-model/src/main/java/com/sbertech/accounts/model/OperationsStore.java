@@ -1,7 +1,5 @@
 package com.sbertech.accounts.model;
 
-import java.util.Collection;
-
 /**
  * Transfers store abstraction interface.
  *

@@ -1,0 +1,5 @@
+com\sbertech\accounts\services\AccountsProcessorBean.class
+com\sbertech\accounts\web\AccountsController.class
+com\sbertech\accounts\exceptions\AccountNotFoundException.class
+com\sbertech\accounts\services\OperationsDatabaseStoreBean.class
+com\sbertech\accounts\services\AccountsDatabaseStoreBean.class

@@ -1,5 +1,6 @@
 package com.sbertech.accounts.model;
 
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -17,15 +18,19 @@ public interface AccountsProcessor {
      * @param aTransfer Atranfer to be performed.
      * @throws NotEnoughAmountException if not enough amount on source account
      * for withdraw.
+     * @throws IOException if some error while communications occur.
      */
-    void transfer(Transfer aTransfer) throws NotEnoughAmountException;
-    
+    void transfer(Transfer aTransfer) throws NotEnoughAmountException,
+            IOException;
+
     /**
      * Retrieves account's operations.
      *
      * @param aAccountNumber A account number wich operations should be fetched.
      * @return An {@code Collection} on operation of the account.
+     * @throws IOException if some error while communications occur.
      */
-    Collection<Transfer> transfersOnAccount(String aAccountNumber);
+    Collection<Transfer> transfersOnAccount(String aAccountNumber)
+            throws IOException;
 
 }

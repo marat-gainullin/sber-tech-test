@@ -1,5 +1,6 @@
 package com.sbertech.accounts.model;
 
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -10,18 +11,20 @@ import java.util.Collection;
 public interface AccountsStore {
 
     /**
-     * Adds an account to the store.
+     * Retrieves accounts collection.
      *
-     * @param aAccount A account to be added.
+     * @return Accounts collection.
+     * @throws IOException if some error while communications occur.
      */
-    void add(Account aAccount);
+    Collection<Account> accounts() throws IOException;
 
     /**
      * Finds an account by number.
      *
      * @param aAccountNumber A account number to search by.
      * @return Account instance found.
+     * @throws IOException if some error while communications occur.
      */
-    Account find(String aAccountNumber);
+    Account find(String aAccountNumber) throws IOException;
 
 }

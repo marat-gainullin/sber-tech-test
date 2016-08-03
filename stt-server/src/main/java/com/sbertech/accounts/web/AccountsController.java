@@ -2,7 +2,6 @@ package com.sbertech.accounts.web;
 
 import java.text.MessageFormat;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +19,7 @@ import com.sbertech.accounts.model.AccountsProcessor;
 import com.sbertech.accounts.model.AccountsStore;
 import com.sbertech.accounts.model.Transfer;
 import com.sbertech.accounts.model.OperationsStore;
+import java.io.IOException;
 
 /**
  * JSON REST end point of accounts API.
@@ -48,34 +48,30 @@ public class AccountsController {
     private AccountsProcessor processor;
 
     /**
-     * Creates an account.
+     * Retrieves a accounts list.
      *
-     * @param aAccount A JSON binded account body.
-     * @param aRequest Http servlet request. Used for 'location' header
-     * calculation.
-     * @param aResponse Http servlet response. Used to send 'location' header.
+     * @return JSON binded collection of accounts.
+     * @throws IOException if some error while communications occur.
      */
     @RequestMapping(path = "accounts",
-            method = RequestMethod.POST,
-            consumes = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.CREATED)
-    public final void createAccount(@RequestBody final Account aAccount, HttpServletRequest aRequest, HttpServletResponse aResponse) {
-        accountsStore.add(aAccount);
-        aResponse.setHeader(HttpHeaders.LOCATION,
-                MessageFormat.format("{0}/{1}", aRequest.getRequestURL(), aAccount.getAccountNumber()));
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public final Collection<Account> accounts() throws IOException {
+        return accountsStore.accounts();
     }
 
     /**
      * Looks up an account by its number.
      *
      * @param aAccountNumber Number of an account to lookup.
-     * @return
+     * @return An {@code Account} instance got from repository.
+     * @throws IOException if some error while communications occur.
      */
     @RequestMapping(path = "accounts/{account-number}",
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public final Account accountByNumber(
-            @PathVariable("account-number") String aAccountNumber) {
+            @PathVariable("account-number") String aAccountNumber) throws IOException {
         return accountsStore.find(aAccountNumber);
     }
 
@@ -85,13 +81,15 @@ public class AccountsController {
      * @param aTransfer A JSON binded operation body.
      * @param aResponse Http servlet response. Used to send 'location' header.
      * @throws NotEnoughAmountException
+     * @throws IOException if some error while communications occur.
      */
     @RequestMapping(path = "operations",
             method = RequestMethod.POST,
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public final void createOperation(@RequestBody final Transfer aTransfer,
-            HttpServletResponse aResponse) throws NotEnoughAmountException {
+            HttpServletResponse aResponse) throws NotEnoughAmountException,
+            IOException {
         processor.transfer(aTransfer);
         aResponse.setHeader(HttpHeaders.LOCATION,
                 MessageFormat.format("operations/{0}", aTransfer.getId()));
@@ -103,12 +101,13 @@ public class AccountsController {
      * @param aAccountNumber Number of an account, operations will be fetched
      * for.
      * @return Collection of {@code Transfer} instances.
+     * @throws IOException if some error while communications occur.
      */
     @RequestMapping(path = "accounts/{account-number}/operations",
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public final Collection<Transfer> operationsOfAccount(
-            @PathVariable("account-number") String aAccountNumber) {
+            @PathVariable("account-number") String aAccountNumber) throws IOException {
         return processor.transfersOnAccount(aAccountNumber);
     }
 

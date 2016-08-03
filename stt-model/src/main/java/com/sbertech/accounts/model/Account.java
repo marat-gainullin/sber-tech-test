@@ -3,17 +3,21 @@ package com.sbertech.accounts.model;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 /**
- * Account persistent POJO. It is perssitent entity.
+ * Account persistent POJO. It is persitent entity.
  *
  * @author mg
  */
 @Entity
-@NamedQuery(name = "account.by.number", query = ""
-        + " from Account a"
-        + " where a.accountNumber = :accountNumber")
+@NamedQueries({
+    @NamedQuery(name = "account.by.number", query = ""
+            + " from Account a"
+            + " where a.accountNumber = :accountNumber"),
+    @NamedQuery(name = "accounts.all", query = ""
+            + " from Account a")})
 public class Account implements Serializable {
 
     /**
@@ -35,12 +39,23 @@ public class Account implements Serializable {
     /**
      * Idicates abandened state. May only be switched on once.
      */
-    private boolean abandoned;
+    private transient boolean abandoned;
 
     /**
      * Account's description.
      */
     private String description;
+
+    public Account() {
+        super();
+    }
+
+    public Account(String aAccountNumber, long aAmount, String aDescription) {
+        super();
+        accountNumber = aAccountNumber;
+        amount = aAmount;
+        description = aDescription;
+    }
 
     /**
      * Amount getter.

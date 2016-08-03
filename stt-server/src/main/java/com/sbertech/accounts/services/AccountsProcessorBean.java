@@ -11,10 +11,14 @@ import com.sbertech.accounts.model.AccountsProcessor;
 import com.sbertech.accounts.model.AccountsStore;
 import com.sbertech.accounts.model.Transfer;
 import com.sbertech.accounts.model.OperationsStore;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  * Processor implementation. Performs withdraw transactions. Transactions
@@ -55,11 +59,17 @@ public class AccountsProcessorBean implements AccountsProcessor {
     private final Map<String, Account> accounts = new ConcurrentHashMap<>();
 
     @Override
-    public void transfer(final Transfer aTransfer) throws NotEnoughAmountException {
+    public void transfer(final Transfer aTransfer) throws NotEnoughAmountException,
+            IOException {
         boolean abandoned;
         do {
             final Account sourceAccount = accounts.computeIfAbsent(aTransfer.getFromAccountNumber(), (String aAccountNumber) -> {
-                return accountsStore.find(aAccountNumber);
+                try {
+                    return accountsStore.find(aAccountNumber);
+                } catch (IOException ex) {
+                    Logger.getLogger(AccountsProcessorBean.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new UncheckedIOException(ex);
+                }
             });
             abandoned = sourceAccount.withdraw(aTransfer.getAmount(), () -> {
                 transfersStore.addTransfer(aTransfer);
@@ -75,9 +85,10 @@ public class AccountsProcessorBean implements AccountsProcessor {
 
     @Override
     public Collection<Transfer> transfersOnAccount(String aAccountNumber) {
-        Query fetcher = dataStore.createNamedQuery("transfers.by.account");
-        fetcher.setParameter("accountNumber", aAccountNumber);
-        return (Collection<Transfer>) fetcher.getResultList();
+        TypedQuery<Transfer> fetcher = dataStore.createNamedQuery("transfers.byaccount", Transfer.class);
+        Account account = new Account(aAccountNumber, 0, "");
+        fetcher.setParameter("accountNumber", account);
+        return fetcher.getResultList();
     }
 
 }

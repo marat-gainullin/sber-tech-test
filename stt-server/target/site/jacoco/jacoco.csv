@@ -1,0 +1,6 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+stt-server,com.sbertech.accounts.exceptions,AccountNotFoundException,11,0,0,0,2,0,1,0,1,0
+stt-server,com.sbertech.accounts.services,AccountsProcessorBean,94,0,4,0,21,0,8,0,6,0
+stt-server,com.sbertech.accounts.services,AccountsDatabaseStoreBean,27,0,0,0,6,0,3,0,3,0
+stt-server,com.sbertech.accounts.services,OperationsDatabaseStoreBean,15,0,0,0,4,0,3,0,3,0
+stt-server,com.sbertech.accounts.web,AccountsController,39,0,0,0,9,0,6,0,6,0

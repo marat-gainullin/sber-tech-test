@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
  * @author mg
  */
 @Entity
-@NamedQuery(name = "transfers.by.account",
+@NamedQuery(name = "transfers.byaccount",
         query = ""
         + " from Transfer tr"
         + " where "
@@ -63,7 +63,7 @@ public class Transfer implements Serializable {
     }
 
     /**
-     * Three args constructor for in appllication logic.
+     * Three args constructor for in application logic.
      *
      * @param aFromAccountNumber A source account number.
      * @param aToAccountNumber A destination account number.
