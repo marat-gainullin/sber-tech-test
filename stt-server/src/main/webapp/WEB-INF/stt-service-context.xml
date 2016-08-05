@@ -8,16 +8,16 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-    <bean id="accountsSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <!--bean id="accountsSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.h2.Driver" />
         <property name="url" value="jdbc:h2:tcp://localhost/~/sber-tech-test/stt" />
         <property name="username" value="sa" />
         <property name="password" value="sa" />
     </bean>
      
-    <bean id="accountsPU" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="accountsSource" />
-        <property name="packagesToScan" value="com.sbertech.accounts.model" />
+        <property name="packagesToScan" value="com.sbertech.accounts" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
         </property>
@@ -30,12 +30,12 @@
         </property>
     </bean>
     
-    <bean id="accountsTxManager"
-          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="accountsSource" />
+    <bean id="transactionManager"
+          class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
     </bean>
 
-    <tx:annotation-driven transaction-manager="accountsTxManager" />
+    <tx:annotation-driven transaction-manager="transactionManager" /-->
     
     <bean id="persistenceExceptionTranslationPostProcessor"
           class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />

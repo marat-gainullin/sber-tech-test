@@ -1,0 +1,5 @@
+com\sbertech\accounts\functional\AccountsProcessorTest$Config.class
+com\sbertech\accounts\functional\AccountsProcessorTest.class
+com\sbertech\accounts\integration\AccountsControllerTest$Config.class
+com\sbertech\accounts\AccountsTestConfig.class
+com\sbertech\accounts\integration\AccountsControllerTest.class

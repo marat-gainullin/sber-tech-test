@@ -3,8 +3,9 @@ package com.sbertech.accounts.model;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -19,8 +20,8 @@ import javax.persistence.TemporalType;
         query = ""
         + " from Transfer tr"
         + " where "
-        + "tr.fromAccountNumber = :accountNumber or "
-        + "tr.toAccountNumber = :accountNumber")
+        + "tr.fromAccount = :account or "
+        + "tr.toAccount = :account")
 public class Transfer implements Serializable {
 
     /**
@@ -32,22 +33,21 @@ public class Transfer implements Serializable {
      * The transfer primary key.
      */
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
     /**
-     * Account number from wich the transfer is done.
+     * Account number from which the transfer is done.
      */
-    @ManyToOne(targetEntity = Account.class)
-    private String fromAccountNumber;
+    private String fromAccount;
 
     /**
-     * Account number to wich the transfer is done.
+     * Account number to which the transfer is done.
      */
-    @ManyToOne(targetEntity = Account.class)
-    private String toAccountNumber;
+    private String toAccount;
 
     /**
      * The transfer amount.
@@ -63,19 +63,20 @@ public class Transfer implements Serializable {
     }
 
     /**
-     * Three args constructor for in application logic.
+     * Four arguments constructor for in application logic.
      *
-     * @param aFromAccountNumber A source account number.
-     * @param aToAccountNumber A destination account number.
+     * @param aFromAccount A source account number.
+     * @param aToAccount A destination account number.
      * @param aAmount A amount of transfer.
      * @param aCreated A transfer creation timestamp.
      */
-    public Transfer(final String aFromAccountNumber,
-            final String aToAccountNumber,
+    public Transfer(final String aFromAccount,
+            final String aToAccount,
             final long aAmount, final Date aCreated) {
         super();
-        fromAccountNumber = aFromAccountNumber;
-        toAccountNumber = aToAccountNumber;
+        fromAccount = aFromAccount;
+        toAccount = aToAccount;
+        amount = aAmount;
         created = aCreated;
     }
 
@@ -84,8 +85,8 @@ public class Transfer implements Serializable {
      *
      * @return Account id from the tranfer is done.
      */
-    public String getFromAccountNumber() {
-        return fromAccountNumber;
+    public String getFromAccount() {
+        return fromAccount;
     }
 
     /**
@@ -93,8 +94,8 @@ public class Transfer implements Serializable {
      *
      * @param aValue An account id from the transfer will be done.
      */
-    public void setFromAccountNumber(String aValue) {
-        fromAccountNumber = aValue;
+    public void setFromAccount(String aValue) {
+        fromAccount = aValue;
     }
 
     /**
@@ -102,8 +103,8 @@ public class Transfer implements Serializable {
      *
      * @return Account id the tranfer is done to.
      */
-    public String getToAccountNumber() {
-        return toAccountNumber;
+    public String getToAccount() {
+        return toAccount;
     }
 
     /**
@@ -111,8 +112,8 @@ public class Transfer implements Serializable {
      *
      * @param aValue An account id the transfer will be done to.
      */
-    public void setToAccountNumber(String aValue) {
-        toAccountNumber = aValue;
+    public void setToAccount(String aValue) {
+        toAccount = aValue;
     }
 
     /**
@@ -138,7 +139,7 @@ public class Transfer implements Serializable {
      *
      * @return Transaction primary key.
      */
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -147,7 +148,7 @@ public class Transfer implements Serializable {
      *
      * @param aId The transfer identifier to be set.
      */
-    public void setId(String aId) {
+    public void setId(Long aId) {
         id = aId;
     }
 
@@ -169,4 +170,18 @@ public class Transfer implements Serializable {
         created = aValue;
     }
 
+    /**
+     * Copies this transfer and normalizes its data. Swaps from account and to
+     * account with each other if amount is less then zero. Also created
+     * property is filled up with current time.
+     *
+     * @return Normalized {@code Transfer} instance.
+     */
+    public Transfer normalize() {
+        if (amount < 0) {
+            return new Transfer(toAccount, fromAccount, -amount, new Date());
+        } else {
+            return new Transfer(fromAccount, toAccount, amount, new Date());
+        }
+    }
 }

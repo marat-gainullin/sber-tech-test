@@ -5,6 +5,7 @@ import com.sbertech.accounts.model.Account;
 import com.sbertech.accounts.model.AccountsStore;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -34,7 +35,7 @@ public class AccountsStoreProxy implements AccountsStore {
 
     @Override
     public Account find(String aAccountNumber) throws IOException {
-        return mapper.readValue(new URL(accountsUrl + aAccountNumber), Account.class);
+        return mapper.readValue(new URL(MessageFormat.format("{0}/{1}", accountsUrl, aAccountNumber)), Account.class);
     }
 
     @Override

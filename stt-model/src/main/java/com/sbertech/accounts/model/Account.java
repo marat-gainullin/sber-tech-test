@@ -1,5 +1,6 @@
 package com.sbertech.accounts.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,7 +8,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 /**
- * Account persistent POJO. It is persitent entity.
+ * Account persistent POJO. It is persistent entity.
  *
  * @author mg
  */
@@ -17,7 +18,7 @@ import javax.persistence.NamedQuery;
             + " from Account a"
             + " where a.accountNumber = :accountNumber"),
     @NamedQuery(name = "accounts.all", query = ""
-            + " from Account a")})
+            + " from Account a order by a.accountNumber")})
 public class Account implements Serializable {
 
     /**
@@ -37,14 +38,15 @@ public class Account implements Serializable {
     private long amount;
 
     /**
-     * Idicates abandened state. May only be switched on once.
-     */
-    private transient boolean abandoned;
-
-    /**
      * Account's description.
      */
     private String description;
+
+    /**
+     * Abandoned flags
+     */
+    @JsonIgnore
+    private transient boolean abandoned;
 
     public Account() {
         super();
@@ -94,55 +96,20 @@ public class Account implements Serializable {
     }
 
     /**
-     * Returns whether this instance of {@code Account} is abandoned.
+     * Add an amount to this account.
      *
-     * @return {@code true} if this instance of {@code Account} is abandoned and
-     * {@code false} otherwise.
+     * @param aAmount Amount to add to this account.
      */
-    public boolean isAbandoned() {
+    public void add(long aAmount) {
+        amount += aAmount;
+    }
+
+    public boolean abandoned() {
         return abandoned;
     }
 
-    /**
-     * Abandenes this {@code Account} instance.
-     *
-     * First it checks whether it is abandoned already. Without such check,
-     * {@code aOnAbandoned} may remove new account with the same account number,
-     * that was concurrently added by another thread.
-     *
-     * @param aOnAbandoned A piece of client code executed inside our
-     * synchronized block.
-     */
-    public synchronized void abandone(Runnable aOnAbandoned) {
-        if (!abandoned) {
-            abandoned = true;
-            aOnAbandoned.run();
-        }
-    }
-
-    /**
-     * Withdraws an amount from this account. It may fail if this instanceof
-     * {@code Account} is abandoned and it may throw an exception if account has
-     * not enough amount.
-     *
-     * @param aAmount Amount to withdraw from this account.
-     * @param aOnWithdraw A piece of client code executed inside our
-     * synchronized block.
-     * @return {@code True} if this instanceof {@code Account} has been
-     * abandoned, and {@code False} otherwise.
-     * @throws NotEnoughAmountException if amount is not enough for the
-     * withdraw.
-     */
-    public synchronized boolean withdraw(long aAmount, Runnable aOnWithdraw) throws NotEnoughAmountException {
-        if (!abandoned) {
-            if (amount >= aAmount) {
-                amount -= aAmount;
-                aOnWithdraw.run();
-            } else {
-                throw new NotEnoughAmountException(accountNumber);
-            }
-        }
-        return abandoned;
+    public synchronized void abandone() {
+        abandoned = true;
     }
 
 }

@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author mg
  */
-@Repository
 @Transactional
+@Repository
 public class AccountsDatabaseStoreBean implements AccountsStore {
 
     /**

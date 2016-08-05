@@ -18,8 +18,9 @@ import com.sbertech.accounts.model.Account;
 import com.sbertech.accounts.model.AccountsProcessor;
 import com.sbertech.accounts.model.AccountsStore;
 import com.sbertech.accounts.model.Transfer;
-import com.sbertech.accounts.model.OperationsStore;
 import java.io.IOException;
+import com.sbertech.accounts.model.TransfersStore;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * JSON REST end point of accounts API.
@@ -39,7 +40,7 @@ public class AccountsController {
      * Operations store.
      */
     @Autowired
-    private OperationsStore operationsStore;
+    private TransfersStore operationsStore;
 
     /**
      * Accounts processor.
@@ -85,14 +86,30 @@ public class AccountsController {
      */
     @RequestMapping(path = "operations",
             method = RequestMethod.POST,
-            consumes = {MediaType.APPLICATION_JSON_VALUE})
+            consumes = {MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_JSON_UTF8_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public final void createOperation(@RequestBody final Transfer aTransfer,
+    public final void createTransfer(@RequestBody final Transfer aTransfer,
             HttpServletResponse aResponse) throws NotEnoughAmountException,
             IOException {
-        processor.transfer(aTransfer);
+        Transfer transfer = aTransfer.normalize();
+        processor.transfer(transfer);
         aResponse.setHeader(HttpHeaders.LOCATION,
-                MessageFormat.format("operations/{0}", aTransfer.getId()));
+                MessageFormat.format("/operations/{0}", transfer.getId()));
+    }
+
+    /**
+     * Handles {@code NotEnoughAmountException} exceptions.
+     *
+     * @param ex A {@code NotEnoughAmountException} instance.
+     * @return A {@code String} to be binded as graceful http response.
+     * @see TransactionNotFoundException
+     * @see TransactionResult
+     */
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(NotEnoughAmountException.class)
+    public final String handleNotEnoughAmount(final NotEnoughAmountException ex) {
+        return ex.getMessage();
     }
 
     /**
@@ -121,7 +138,7 @@ public class AccountsController {
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public final Transfer operationById(
-            @PathVariable("operation-id") String anOperationId) {
+            @PathVariable("operation-id") Long anOperationId) {
         return operationsStore.find(anOperationId);
     }
 

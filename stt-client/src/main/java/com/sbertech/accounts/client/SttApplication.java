@@ -1,6 +1,6 @@
 package com.sbertech.accounts.client;
 
-import com.sbertech.accounts.model.Account;
+import java.text.MessageFormat;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -12,7 +12,7 @@ import javafx.stage.Stage;
  */
 public class SttApplication extends Application {
 
-    private static final String DEF_ACCOUNTS_URL = "http://localhost:8080/stt/accounts/";
+    private static final String DEF_BASE_URL = "http://localhost:8080/stt/";
 
     public static void main(String args[]) {
         launch(args);
@@ -20,7 +20,13 @@ public class SttApplication extends Application {
 
     @Override
     public void start(Stage aPrimaryStage) throws Exception {
-        AccountsView av = new AccountsView(DEF_ACCOUNTS_URL);
+        String baseUrl = getParameters().getNamed()
+                .getOrDefault("-url", DEF_BASE_URL);
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        }
+        AccountsView av = new AccountsView(MessageFormat.format("{0}/accounts", baseUrl),
+                MessageFormat.format("{0}/operations", baseUrl));
         av.showAccounts();
     }
 }
