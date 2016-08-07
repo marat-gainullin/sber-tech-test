@@ -34,7 +34,7 @@ public class SttConfig {
      * constructed.
      */
     @Bean
-    public final AbstractEntityManagerFactoryBean entityManagerFactory(
+    public AbstractEntityManagerFactoryBean entityManagerFactory(
             final DataSource dataSource,
             final JpaVendorAdapter jpaVendorAdapter) {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean
@@ -55,7 +55,7 @@ public class SttConfig {
      * @return {@code DataSource} instance.
      */
     @Bean
-    public final DataSource dataSource() {
+    public DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();
         ds.setDriverClassName("org.h2.Driver");
         ds.setUrl("jdbc:h2:tcp://localhost/~/sber-tech-test/stt");
@@ -76,7 +76,7 @@ public class SttConfig {
      * @return {@code JpaVendorAdapter} instance.
      */
     @Bean
-    public final JpaVendorAdapter jpaVendorAdapter() {
+    public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabase(Database.H2);
         adapter.setShowSql(true);
@@ -93,7 +93,7 @@ public class SttConfig {
      * @return A {@code PlatformTransactionManager} instance.
      */
     @Bean
-    public final PlatformTransactionManager transactionManager(
+    public PlatformTransactionManager transactionManager(
             final EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }

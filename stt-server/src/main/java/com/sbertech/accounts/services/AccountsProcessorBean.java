@@ -14,7 +14,6 @@ import com.sbertech.accounts.model.Transfer;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -156,12 +155,14 @@ public class AccountsProcessorBean implements AccountsProcessor {
      */
     private void shrinkAccounts() {
         if (accounts.size() > MAX_ACCOUNTS_SIZE) {
-            Iterator<Map.Entry<String, Account>> ai
-                    = accounts.entrySet().iterator();
-            while (ai.hasNext()) {
-                Account account = ai.next().getValue();
+            Account[] toAbandone = accounts.values().toArray(new Account[]{});
+            for (Account account : toAbandone) {
                 account.abandone();
-                ai.remove();
+                /**
+                 * In the cae of new account arrive for the same key, two
+                 * arguments remove method will take care of such case.
+                 */
+                accounts.remove(account.getAccountNumber(), account);
             }
         }
     }
@@ -171,16 +172,12 @@ public class AccountsProcessorBean implements AccountsProcessor {
      */
     @Override
     public final Collection<Transfer> transfersOnAccount(
-            final String aAccountNumber) {
+            final String aAccountNumber) throws IOException {
+        accountsStore.find(aAccountNumber);
         TypedQuery<Transfer> fetcher = dataStore
                 .createNamedQuery("transfers.byaccount", Transfer.class);
         fetcher.setParameter("account", aAccountNumber);
-        Collection<Transfer> transfers = fetcher.getResultList();
-        if (transfers.isEmpty()) {
-            throw new NoResultException(MessageFormat
-                    .format("Account {0} doesn't exist", aAccountNumber));
-        }
-        return transfers;
+        return fetcher.getResultList();
     }
 
 }

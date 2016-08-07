@@ -68,6 +68,14 @@ public class TransfersTest extends AbstractJUnit4SpringContextTests {
     }
 
     @Test
+    public void emptyAccountOperationsTest() throws Exception {
+        restMock.perform(get("/accounts/{account-number}/operations", "65800002589632588"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().json("[]"));
+    }
+    
+    @Test
     public void transferTest() throws Exception {
         restMock.perform(post("/transfers")
                 .contentType(MediaType.APPLICATION_JSON)

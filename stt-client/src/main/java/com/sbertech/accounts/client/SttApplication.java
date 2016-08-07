@@ -26,7 +26,7 @@ public class SttApplication extends Application {
             baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
         }
         AccountsView av = new AccountsView(MessageFormat.format("{0}/accounts", baseUrl),
-                MessageFormat.format("{0}/operations", baseUrl));
+                MessageFormat.format("{0}/transfers", baseUrl));
         av.showAccounts();
     }
 }

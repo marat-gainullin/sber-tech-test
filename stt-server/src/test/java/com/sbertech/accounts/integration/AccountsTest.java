@@ -80,12 +80,11 @@ public class AccountsTest extends AbstractJUnit4SpringContextTests {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json("{\"accountNumber\":\"25800002589632588\",\"amount\":3000000,\"description\":\"Deposit of CIA\"}"));
-
     }
 
     @Test
     public void absentAccountTest() throws Exception {
         restMock.perform(get("/accounts/{account-number}", "101010101010"))
                 .andExpect(status().isNotFound());
-    }
+    }    
 }
