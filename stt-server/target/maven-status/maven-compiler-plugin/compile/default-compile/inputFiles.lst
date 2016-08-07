@@ -1,6 +1,7 @@
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\SttConfig.java
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\services\AccountsProcessorBean.java
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\web\AccountsController.java
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\exceptions\AccountNotFoundException.java
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\services\TransfersDatabaseStoreBean.java
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\services\AccountsDatabaseStoreBean.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\web\AccountsController.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\exceptions\BadTransferException.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\services\TransfersDatabaseStoreBean.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\web\TransfersController.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\services\AccountsDatabaseStoreBean.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\SttConfig.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\main\java\com\sbertech\accounts\services\AccountsProcessorBean.java

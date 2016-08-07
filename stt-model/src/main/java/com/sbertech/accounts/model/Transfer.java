@@ -2,10 +2,12 @@ package com.sbertech.accounts.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -16,12 +18,19 @@ import javax.persistence.TemporalType;
  * @author mg
  */
 @Entity
-@NamedQuery(name = "transfers.byaccount",
-        query = ""
-        + " from Transfer tr"
-        + " where "
-        + "tr.fromAccount = :account or "
-        + "tr.toAccount = :account")
+@NamedQueries({
+    @NamedQuery(name = "transfer.by.id",
+            query = ""
+            + " from Transfer tr"
+            + " where "
+            + "tr.id = :id"),
+    @NamedQuery(name = "transfers.byaccount",
+            query = ""
+            + " from Transfer tr"
+            + " where "
+            + "tr.fromAccount = :account or "
+            + "tr.toAccount = :account")
+})
 public class Transfer implements Serializable {
 
     /**
@@ -30,28 +39,38 @@ public class Transfer implements Serializable {
     private static final long serialVersionUID = 4660668591657719072L;
 
     /**
-     * The transfer primary key.
+     * The transfer primary key. It is not final because of ORM.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column
     private Long id;
 
+    /**
+     * The transfer creation timestamp. It is not final because of ORM.
+     */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column
     private Date created;
 
     /**
-     * Account number from which the transfer is done.
+     * Account number from which the transfer is done. It is not final because
+     * of ORM.
      */
+    @Column
     private String fromAccount;
 
     /**
-     * Account number to which the transfer is done.
+     * Account number to which the transfer is done. It is not final because of
+     * ORM.
      */
+    @Column
     private String toAccount;
 
     /**
-     * The transfer amount.
+     * The transfer amount. It is not final because of ORM.
      */
+    @Column
     private Long amount;
 
     /**
@@ -68,20 +87,19 @@ public class Transfer implements Serializable {
      * @param aFromAccount A source account number.
      * @param aToAccount A destination account number.
      * @param aAmount A amount of transfer.
-     * @param aCreated A transfer creation timestamp.
      */
     public Transfer(final String aFromAccount,
             final String aToAccount,
-            final long aAmount, final Date aCreated) {
+            final long aAmount) {
         super();
         fromAccount = aFromAccount;
         toAccount = aToAccount;
         amount = aAmount;
-        created = aCreated;
+        created = new Date();
     }
 
     /**
-     * From account id getter.
+     * From account id getter. It is not final because of ORM.
      *
      * @return Account id from the tranfer is done.
      */
@@ -90,16 +108,7 @@ public class Transfer implements Serializable {
     }
 
     /**
-     * From account id setter.
-     *
-     * @param aValue An account id from the transfer will be done.
-     */
-    public void setFromAccount(String aValue) {
-        fromAccount = aValue;
-    }
-
-    /**
-     * To account id getter.
+     * To account id getter. It is not final because of ORM.
      *
      * @return Account id the tranfer is done to.
      */
@@ -108,16 +117,7 @@ public class Transfer implements Serializable {
     }
 
     /**
-     * To account id setter.
-     *
-     * @param aValue An account id the transfer will be done to.
-     */
-    public void setToAccount(String aValue) {
-        toAccount = aValue;
-    }
-
-    /**
-     * The transfer amount getter.
+     * The transfer amount getter. It is not final because of ORM.
      *
      * @return the transfer amount.
      */
@@ -126,16 +126,7 @@ public class Transfer implements Serializable {
     }
 
     /**
-     * The transfer amount setter.
-     *
-     * @param aValue of the transfer.
-     */
-    public void setAmount(Long aValue) {
-        amount = aValue;
-    }
-
-    /**
-     * Transfer identifier getter.
+     * Transfer identifier getter. It is not final because of ORM.
      *
      * @return Transaction primary key.
      */
@@ -144,16 +135,7 @@ public class Transfer implements Serializable {
     }
 
     /**
-     * The transfer identifier setter.
-     *
-     * @param aId The transfer identifier to be set.
-     */
-    public void setId(Long aId) {
-        id = aId;
-    }
-
-    /**
-     * Transfer timestamp getter.
+     * Transfer timestamp getter. It is not final because of ORM.
      *
      * @return Transfer timestamp.
      */
@@ -162,26 +144,17 @@ public class Transfer implements Serializable {
     }
 
     /**
-     * Transfer timestamp setter.
-     *
-     * @param aValue {@code Date} instance to be setted as transfer timestamp.
-     */
-    public void setCreated(Date aValue) {
-        created = aValue;
-    }
-
-    /**
      * Copies this transfer and normalizes its data. Swaps from account and to
-     * account with each other if amount is less then zero. Also created
+     * account with each other if amount is less then zero. Also 'created'
      * property is filled up with current time.
      *
-     * @return Normalized {@code Transfer} instance.
+     * @return A normalized {@code Transfer} instance.
      */
-    public Transfer normalize() {
+    public final Transfer normalize() {
         if (amount < 0) {
-            return new Transfer(toAccount, fromAccount, -amount, new Date());
+            return new Transfer(toAccount, fromAccount, -amount);
         } else {
-            return new Transfer(fromAccount, toAccount, amount, new Date());
+            return new Transfer(fromAccount, toAccount, amount);
         }
     }
 }

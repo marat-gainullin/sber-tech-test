@@ -1,6 +1,7 @@
 com\sbertech\accounts\services\AccountsProcessorBean.class
 com\sbertech\accounts\web\AccountsController.class
+com\sbertech\accounts\web\TransfersController.class
 com\sbertech\accounts\services\TransfersDatabaseStoreBean.class
 com\sbertech\accounts\SttConfig.class
-com\sbertech\accounts\exceptions\AccountNotFoundException.class
+com\sbertech\accounts\exceptions\BadTransferException.class
 com\sbertech\accounts\services\AccountsDatabaseStoreBean.class

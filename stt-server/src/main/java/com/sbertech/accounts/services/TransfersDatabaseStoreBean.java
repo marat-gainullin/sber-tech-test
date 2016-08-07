@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 import com.sbertech.accounts.model.Transfer;
 import org.springframework.transaction.annotation.Transactional;
 import com.sbertech.accounts.model.TransfersStore;
+import javax.persistence.TypedQuery;
 
 /**
- * Operations database store bean.
+ * Transfers database store bean.
  *
  * @author mg
  */
@@ -23,16 +24,27 @@ public class TransfersDatabaseStoreBean implements TransfersStore {
     @PersistenceContext
     private EntityManager dataStore;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void addTransfer(Transfer aTransfer, Account aSourceAccount, Account aDestAccount) {
+    public final void addTransfer(final Transfer aTransfer,
+            final Account aSourceAccount,
+            final Account aDestAccount) {
         dataStore.merge(aSourceAccount);
         dataStore.merge(aDestAccount);
         dataStore.persist(aTransfer);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Transfer find(Long aTransferId) {
-        return dataStore.find(Transfer.class, aTransferId);
+    public final Transfer find(final Long aTransferId) {
+        TypedQuery<Transfer> fetcher = dataStore.createNamedQuery(
+                "transfer.by.id", Transfer.class);
+        fetcher.setParameter("id", aTransferId);
+        return fetcher.getSingleResult();
     }
 
 }

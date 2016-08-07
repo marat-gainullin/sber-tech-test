@@ -2,7 +2,9 @@ package com.sbertech.accounts.client;
 
 import com.sbertech.accounts.model.Account;
 import com.sbertech.accounts.model.AccountsProcessor;
-import com.sbertech.accounts.model.NotEnoughAmountException;
+import com.sbertech.accounts.exceptions.EmptyTransferException;
+import com.sbertech.accounts.exceptions.NotEnoughAmountException;
+import com.sbertech.accounts.exceptions.SameAccountsTransferException;
 import com.sbertech.accounts.model.Transfer;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -29,7 +31,7 @@ import javafx.util.converter.DoubleStringConverter;
 
 /**
  *
- * @author MGaynullin
+ * @author mg
  */
 public class TransferView extends Stage {
 
@@ -109,12 +111,11 @@ public class TransferView extends Stage {
 
                 aProcessor.transfer(new Transfer(from.getAccountNumber(),
                         to.getAccountNumber(),
-                        amount.longValue(),
-                        null
+                        amount.longValue()
                 ));
                 TransferView.this.close();
                 aOnTransfer.accept(from, to);
-            } catch (NotEnoughAmountException | IOException ex) {
+            } catch (NotEnoughAmountException | IOException | EmptyTransferException | SameAccountsTransferException ex) {
                 Logger.getLogger(TransferView.class.getName()).log(Level.SEVERE, null, ex);
             }
         });

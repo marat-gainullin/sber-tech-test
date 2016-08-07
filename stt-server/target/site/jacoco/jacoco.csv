@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+stt-server,com.sbertech.accounts.exceptions,BadTransferException,0,11,0,0,0,2,0,1,0,1
+stt-server,com.sbertech.accounts.services,TransfersDatabaseStoreBean,0,33,0,0,0,8,0,3,0,3
+stt-server,com.sbertech.accounts.services,AccountsProcessorBean,52,174,8,14,16,37,7,9,0,5
+stt-server,com.sbertech.accounts.services,AccountsDatabaseStoreBean,0,27,0,0,0,6,0,3,0,3
+stt-server,com.sbertech.accounts.web,AccountsController,0,15,0,0,0,4,0,4,0,4
+stt-server,com.sbertech.accounts.web,TransfersController,0,72,0,6,0,19,0,12,0,9
+stt-server,com.sbertech.accounts,SttConfig,0,84,0,0,0,24,0,5,0,5

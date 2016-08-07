@@ -24,16 +24,24 @@ public class AccountsDatabaseStoreBean implements AccountsStore {
     @PersistenceContext
     private EntityManager dataStore;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Account find(String aAccountNumber) {
-        TypedQuery<Account> fetcher = dataStore.createNamedQuery("account.by.number", Account.class);
+    public final Account find(final String aAccountNumber) {
+        TypedQuery<Account> fetcher = dataStore
+                .createNamedQuery("account.by.number", Account.class);
         fetcher.setParameter("accountNumber", aAccountNumber);
         return fetcher.getSingleResult();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Collection<Account> accounts() {
-        TypedQuery<Account> fetcher = dataStore.createNamedQuery("accounts.all", Account.class);
+    public final Collection<Account> accounts() {
+        TypedQuery<Account> fetcher = dataStore
+                .createNamedQuery("accounts.all", Account.class);
         return fetcher.getResultList();
     }
 

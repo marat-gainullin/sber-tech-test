@@ -19,6 +19,11 @@ public class AccountsStoreProxy implements AccountsStore {
 
     private static class AccountsList extends ArrayList<Account> {
 
+        /**
+         * generated serial version UID.
+         */
+        private static final long serialVersionUID = 4164883060290652298L;
+
         public AccountsList() {
             super();
         }

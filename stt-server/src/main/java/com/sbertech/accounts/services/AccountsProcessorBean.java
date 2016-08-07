@@ -1,13 +1,15 @@
 package com.sbertech.accounts.services;
 
+import com.sbertech.accounts.exceptions.SameAccountsTransferException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.sbertech.accounts.model.NotEnoughAmountException;
+import com.sbertech.accounts.exceptions.NotEnoughAmountException;
 import com.sbertech.accounts.model.Account;
 import com.sbertech.accounts.model.AccountsProcessor;
 import com.sbertech.accounts.model.AccountsStore;
+import com.sbertech.accounts.exceptions.EmptyTransferException;
 import com.sbertech.accounts.model.Transfer;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -20,6 +22,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import com.sbertech.accounts.model.TransfersStore;
+import java.text.MessageFormat;
+import javax.persistence.NoResultException;
 
 /**
  * Processor implementation. Performs inter accounts transfer transactions.
@@ -41,7 +45,7 @@ public class AccountsProcessorBean implements AccountsProcessor {
     private AccountsStore accountsStore;
 
     /**
-     * Operations store.
+     * Transfers store.
      */
     @Autowired
     private TransfersStore transfersStore;
@@ -70,18 +74,35 @@ public class AccountsProcessorBean implements AccountsProcessor {
      * transaction.
      * @throws NotEnoughAmountException if amount on an account is less then
      * transfer amount.
+     * @throws EmptyTransferException if {@code aTransfer} has zero amount.
+     * @throws SameAccountsTransferException when an attempt of transfer from an
+     * account to itself is made.
      * @throws IOException if some error while communications occur.
      */
     @Override
     @SuppressWarnings("NestedSynchronizedStatement")
-    public void transfer(final Transfer aTransfer) throws NotEnoughAmountException,
-            IOException {
+    public final void transfer(final Transfer aTransfer)
+            throws NotEnoughAmountException,
+            EmptyTransferException,
+            IOException,
+            SameAccountsTransferException {
+        /**
+         * Since Oracle attempts to eliminate byte-range interning of numbers,
+         * ignore interned numbers cache.
+         */
+        if (aTransfer.getAmount().equals(0L)) {
+            throw new EmptyTransferException();
+        }
+        if (aTransfer.getFromAccount().equals(aTransfer.getToAccount())) {
+            throw new SameAccountsTransferException(aTransfer.getFromAccount());
+        }
         shrinkAccounts();
         Function<String, Account> fromDatabase = (String aAccountNumber) -> {
             try {
                 return accountsStore.find(aAccountNumber);
             } catch (IOException ex) {
-                Logger.getLogger(AccountsProcessorBean.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AccountsProcessorBean.class.getName())
+                        .log(Level.SEVERE, null, ex);
                 throw new UncheckedIOException(ex);
             }
         };
@@ -89,21 +110,31 @@ public class AccountsProcessorBean implements AccountsProcessor {
             boolean abandoned;
             do {
                 abandoned = false;
-                Account sourceAccount = accounts.computeIfAbsent(aTransfer.getFromAccount(), fromDatabase);
-                Account destAccount = accounts.computeIfAbsent(aTransfer.getToAccount(), fromDatabase);
+                Account sourceAccount = accounts
+                        .computeIfAbsent(aTransfer.getFromAccount(),
+                                fromDatabase);
+                Account destAccount = accounts
+                        .computeIfAbsent(aTransfer.getToAccount(),
+                                fromDatabase);
                 final long amount = aTransfer.getAmount();
-                final Account first = sourceAccount.getAccountNumber().compareTo(destAccount.getAccountNumber()) < 0 ? sourceAccount : destAccount;
-                final Account second = sourceAccount.getAccountNumber().compareTo(destAccount.getAccountNumber()) < 0 ? destAccount : sourceAccount;
+                final Account first = sourceAccount.getAccountNumber()
+                        .compareTo(destAccount.getAccountNumber()) < 0
+                        ? sourceAccount : destAccount;
+                final Account second = sourceAccount.getAccountNumber()
+                        .compareTo(destAccount.getAccountNumber()) < 0
+                        ? destAccount : sourceAccount;
                 synchronized (first) {
                     synchronized (second) {
                         if (!first.abandoned() && !second.abandoned()) {
                             if (sourceAccount.getAmount() < amount) {
-                                throw new NotEnoughAmountException(sourceAccount.getAccountNumber());
+                                throw new NotEnoughAmountException(
+                                        sourceAccount.getAccountNumber());
                             }
                             sourceAccount.add(-amount);
                             destAccount.add(amount);
                             try {
-                                transfersStore.addTransfer(aTransfer, sourceAccount, destAccount);
+                                transfersStore.addTransfer(aTransfer,
+                                        sourceAccount, destAccount);
                             } catch (Exception ex) {
                                 sourceAccount.add(amount);
                                 destAccount.add(-amount);
@@ -120,9 +151,13 @@ public class AccountsProcessorBean implements AccountsProcessor {
         }
     }
 
+    /**
+     * Shrinks accounts map to avoid too large memory consumption.
+     */
     private void shrinkAccounts() {
         if (accounts.size() > MAX_ACCOUNTS_SIZE) {
-            Iterator<Map.Entry<String, Account>> ai = accounts.entrySet().iterator();
+            Iterator<Map.Entry<String, Account>> ai
+                    = accounts.entrySet().iterator();
             while (ai.hasNext()) {
                 Account account = ai.next().getValue();
                 account.abandone();
@@ -131,11 +166,21 @@ public class AccountsProcessorBean implements AccountsProcessor {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Collection<Transfer> transfersOnAccount(String aAccountNumber) {
-        TypedQuery<Transfer> fetcher = dataStore.createNamedQuery("transfers.byaccount", Transfer.class);
+    public final Collection<Transfer> transfersOnAccount(
+            final String aAccountNumber) {
+        TypedQuery<Transfer> fetcher = dataStore
+                .createNamedQuery("transfers.byaccount", Transfer.class);
         fetcher.setParameter("account", aAccountNumber);
-        return fetcher.getResultList();
+        Collection<Transfer> transfers = fetcher.getResultList();
+        if (transfers.isEmpty()) {
+            throw new NoResultException(MessageFormat
+                    .format("Account {0} doesn't exist", aAccountNumber));
+        }
+        return transfers;
     }
 
 }

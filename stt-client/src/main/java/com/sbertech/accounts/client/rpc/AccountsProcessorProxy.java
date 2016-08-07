@@ -2,7 +2,7 @@ package com.sbertech.accounts.client.rpc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sbertech.accounts.model.AccountsProcessor;
-import com.sbertech.accounts.model.NotEnoughAmountException;
+import com.sbertech.accounts.exceptions.NotEnoughAmountException;
 import com.sbertech.accounts.model.Transfer;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,20 +28,20 @@ public class AccountsProcessorProxy implements AccountsProcessor {
     }
 
     private final String accountsUrl;
-    private final String operationsUrl;
+    private final String transfersUrl;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public AccountsProcessorProxy(String aAccountsUrl, String aOperationsUrl) {
+    public AccountsProcessorProxy(String aAccountsUrl, String aTransfersUrl) {
         super();
         accountsUrl = aAccountsUrl;
-        operationsUrl = aOperationsUrl;
+        transfersUrl = aTransfersUrl;
     }
 
     @Override
     public void transfer(Transfer aTransfer) throws NotEnoughAmountException,
             IOException {
         String transferJson = mapper.writeValueAsString(aTransfer);
-        URL destUrl = new URL(operationsUrl);
+        URL destUrl = new URL(transfersUrl);
         HttpURLConnection connection = (HttpURLConnection) destUrl.openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");

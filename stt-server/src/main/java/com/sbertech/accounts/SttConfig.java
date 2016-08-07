@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sbertech.accounts;
 
 import java.util.Properties;
@@ -11,6 +6,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -21,15 +17,28 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  *
- * @author MGaynullin
+ * @author mg
  */
 @Configuration
 @EnableTransactionManagement
 public class SttConfig {
 
+    /**
+     * Spring's annotation based configuration factory method.
+     *
+     * @param dataSource A {@code DataSource} instance to be used for entity
+     * manager factory.
+     * @param jpaVendorAdapter A {@code JpaVendorAdapter} instance to be used
+     * for entity manager factory.
+     * @return {@code AbstractEntityManagerFactoryBean} instance just
+     * constructed.
+     */
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
-        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+    public final AbstractEntityManagerFactoryBean entityManagerFactory(
+            final DataSource dataSource,
+            final JpaVendorAdapter jpaVendorAdapter) {
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean
+                = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         Properties jpaProperties = new Properties();
         jpaProperties.setProperty("hibernate.hbm2ddl.auto", "create");
@@ -40,19 +49,34 @@ public class SttConfig {
         return entityManagerFactoryBean;
     }
 
+    /**
+     * Spring's annotation based configuration factory method.
+     *
+     * @return {@code DataSource} instance.
+     */
     @Bean
-    public BasicDataSource dataSource() {
+    public final DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();
         ds.setDriverClassName("org.h2.Driver");
         ds.setUrl("jdbc:h2:tcp://localhost/~/sber-tech-test/stt");
         ds.setUsername("sa");
         ds.setPassword("sa");
-        ds.setInitialSize(5);
+        ds.setInitialSize(DEFAULT_CONNECTION_POOL_SIZE);
         return ds;
     }
 
+    /**
+     * Default size of database connections pool.
+     */
+    private static final int DEFAULT_CONNECTION_POOL_SIZE = 5;
+
+    /**
+     * Spring's annotation based configuration factory method.
+     *
+     * @return {@code JpaVendorAdapter} instance.
+     */
     @Bean
-    public JpaVendorAdapter jpaVendorAdapter() {
+    public final JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabase(Database.H2);
         adapter.setShowSql(true);
@@ -61,8 +85,16 @@ public class SttConfig {
         return adapter;
     }
 
+    /**
+     * Spring's annotation based configuration factory method.
+     *
+     * @param entityManagerFactory {@code EntityManagerFactory} instance to used
+     * for {@code PlatformTransactionManager}
+     * @return A {@code PlatformTransactionManager} instance.
+     */
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+    public final PlatformTransactionManager transactionManager(
+            final EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
 }

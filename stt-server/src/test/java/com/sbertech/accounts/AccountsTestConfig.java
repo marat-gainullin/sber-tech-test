@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sbertech.accounts;
 
-import com.sbertech.accounts.SttConfig;
 import com.sbertech.accounts.model.AccountsProcessor;
 import com.sbertech.accounts.model.AccountsStore;
 import com.sbertech.accounts.model.TransfersStore;
@@ -13,11 +7,12 @@ import com.sbertech.accounts.services.AccountsDatabaseStoreBean;
 import com.sbertech.accounts.services.AccountsProcessorBean;
 import com.sbertech.accounts.services.TransfersDatabaseStoreBean;
 import com.sbertech.accounts.web.AccountsController;
+import com.sbertech.accounts.web.TransfersController;
 import org.springframework.context.annotation.Bean;
 
 /**
  *
- * @author MGaynullin
+ * @author mg
  */
 public class AccountsTestConfig extends SttConfig {
 
@@ -35,10 +30,15 @@ public class AccountsTestConfig extends SttConfig {
     public TransfersStore transfersStore() {
         return new TransfersDatabaseStoreBean();
     }
-    
+
     @Bean
-    public AccountsController accountsController() {
+    public AccountsController accounts() {
         return new AccountsController();
     }
-    
+
+    @Bean
+    public TransfersController transfers() {
+        return new TransfersController();
+    }
+
 }

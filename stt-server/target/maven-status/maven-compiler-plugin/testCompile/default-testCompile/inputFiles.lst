@@ -1,3 +1,5 @@
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\AccountsTestConfig.java
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\functional\AccountsProcessorTest.java
-C:\Users\MGaynullin\Documents\GitHub\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\integration\AccountsControllerTest.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\AccountsTestConfig.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\functional\AccountsProcessorTest.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\integration\TransfersTest.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\integration\AccountsTest.java
+C:\Users\gala\Documents\NetBeansProjects\sber-tech-test\stt-server\src\test\java\com\sbertech\accounts\integration\InverseTransferTest.java

@@ -2,6 +2,7 @@ package com.sbertech.accounts.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
@@ -27,40 +28,40 @@ public class Account implements Serializable {
     private static final long serialVersionUID = 3471069051927286254L;
 
     /**
-     * Account number.
+     * Account number. It is not final because of ORM.
      */
     @Id
+    @Column
     private String accountNumber;
 
     /**
-     * The account's amount. This value is per cent accurate.
+     * The account's amount. This value is per cent accurate. It is not final
+     * because of ORM.
      */
+    @Column
     private long amount;
 
     /**
-     * Account's description.
+     * Account's description. It is not final because of ORM.
      */
+    @Column
     private String description;
 
     /**
-     * Abandoned flags
+     * Abandoned flag.
      */
     @JsonIgnore
     private transient boolean abandoned;
 
+    /**
+     * Account's no args constructor. Used by ORM.
+     */
     public Account() {
         super();
     }
 
-    public Account(String aAccountNumber, long aAmount, String aDescription) {
-        super();
-        accountNumber = aAccountNumber;
-        amount = aAmount;
-        description = aDescription;
-    }
-
     /**
-     * Amount getter.
+     * Amount getter. Amount is of per cent accuracy.
      *
      * @return account amount.
      */
@@ -87,28 +88,27 @@ public class Account implements Serializable {
     }
 
     /**
-     * Account's description setter.
-     *
-     * @param aDescription A account's description to be set.
-     */
-    public void setDescription(String aDescription) {
-        description = aDescription;
-    }
-
-    /**
      * Add an amount to this account.
      *
      * @param aAmount Amount to add to this account.
      */
-    public void add(long aAmount) {
+    public final void add(final long aAmount) {
         amount += aAmount;
     }
 
-    public boolean abandoned() {
+    /**
+     * Abandoned flag getter.
+     *
+     * @return True if this account is already abandoned and false otherwise.
+     */
+    public final synchronized boolean abandoned() {
         return abandoned;
     }
 
-    public synchronized void abandone() {
+    /**
+     * Abandones the {@code Account} instance.
+     */
+    public final synchronized void abandone() {
         abandoned = true;
     }
 

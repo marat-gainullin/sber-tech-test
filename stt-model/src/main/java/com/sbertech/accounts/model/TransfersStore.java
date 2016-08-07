@@ -14,7 +14,8 @@ public interface TransfersStore {
      * @param aSourceAccount A source account of the transfer.
      * @param aDestAccount A destination account of the transfer.
      */
-    void addTransfer(Transfer aTransfer, Account aSourceAccount, Account aDestAccount);
+    void addTransfer(Transfer aTransfer,
+            Account aSourceAccount, Account aDestAccount);
 
     /**
      * Fins a {@code Transfer} by it's primary key.
