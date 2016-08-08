@@ -21,8 +21,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import com.sbertech.accounts.model.TransfersStore;
-import java.text.MessageFormat;
-import javax.persistence.NoResultException;
 
 /**
  * Processor implementation. Performs inter accounts transfer transactions.

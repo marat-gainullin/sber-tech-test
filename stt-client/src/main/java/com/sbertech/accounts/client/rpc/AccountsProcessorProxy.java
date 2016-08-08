@@ -1,5 +1,6 @@
 package com.sbertech.accounts.client.rpc;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sbertech.accounts.model.AccountsProcessor;
 import com.sbertech.accounts.exceptions.NotEnoughAmountException;
@@ -9,8 +10,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * RPC proxy of {@code AccountsProcessor}.
@@ -19,13 +20,6 @@ import java.util.Collection;
  * @see AccountsProcessor
  */
 public class AccountsProcessorProxy implements AccountsProcessor {
-
-    private static class TransfersList extends ArrayList<Transfer> {
-
-        public TransfersList() {
-            super();
-        }
-    }
 
     private final String accountsUrl;
     private final String transfersUrl;
@@ -61,7 +55,7 @@ public class AccountsProcessorProxy implements AccountsProcessor {
 
     @Override
     public Collection<Transfer> transfersOnAccount(String aAccountNumber) throws IOException {
-        return mapper.readValue(new URL(MessageFormat.format("{0}/{1}/operations", accountsUrl, aAccountNumber)), TransfersList.class);
+        return mapper.readValue(new URL(MessageFormat.format("{0}/{1}/operations", accountsUrl, aAccountNumber)), new TypeReference<List<Transfer>>(){});
     }
 
 }
