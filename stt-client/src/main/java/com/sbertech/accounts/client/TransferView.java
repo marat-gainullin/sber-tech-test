@@ -65,7 +65,11 @@ public class TransferView extends Stage {
         amountEditor.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
 
         HBox amountBox = new HBox(10d, new Label(res.getString("label.tranfer.amount.title")), amountEditor);
-        HBox accountsBox = new HBox(10d, new Label(res.getString("label.transfer.from.title")), cmbFrom, new Label(res.getString("label.transfer.to.title")), cmbTo);
+        Label lblFrom = new Label(res.getString("label.transfer.from.title"));
+        lblFrom.setPrefWidth(70);
+        Label lblTo = new Label(res.getString("label.transfer.to.title"));
+        lblTo.setPrefWidth(70);
+        HBox accountsBox = new HBox(10d, lblFrom, cmbFrom, lblTo, cmbTo);
         VBox transferBox = new VBox(10d, accountsBox, amountBox);
         AnchorPane transferPane = new AnchorPane();
         transferPane.getChildren().add(transferBox);
@@ -123,5 +127,4 @@ public class TransferView extends Stage {
         setTitle(res.getString("transfer.view.title"));
         setScene(new Scene(transferPane, 650, 250));
     }
-
 }
