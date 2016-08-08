@@ -17,7 +17,7 @@ To generate project reports (FindBugs, CMD, PMD and CheckStyle), cd into a folde
 To view these reports, go to `target/site` subfolder of a particuler project and view `project-reports.html` file in this subfolder with your browser.
 
 ## Run
-To run `stt-server` you need running `H2` database server. Also you need Servlet container to deploy `stt-server-1.0-SNAPSHOT.war`. It is recemmended to use Apache tomcat for playing purposes.
+To run `stt-server` you need running `H2` database server. Also you need Servlet container to deploy `stt-server-1.0-SNAPSHOT.war`. It is recemmended to use Apache tomcat for playing purposes. Note, that by default Aapche tomcat has no jdbc drivers on its classpath, so plaese add `h2-1.4.192.jar` to `tomcat/lib` folder before deploying and running the application.
 The deplyment procedure is generic. So run an `H2` instance and deploy `stt-server-1.0-SNAPSHOT.war`. After that, everything is ready to play with accounts. 
 Cd into a `target` folder of the project `stt-client` and type on the command line `java -jar stt-client-1.0-SNAPSHOT.jar`.
 
